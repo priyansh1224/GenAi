@@ -1,0 +1,1 @@
+Starting the gen ai course.
