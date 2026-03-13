@@ -422,13 +422,13 @@ Start with the first command when the user makes their request.
          console.log(`📋 Result: ${toolResponse}\n`);
 
          if (buildStep === 1) {
-            console.log("✅ HTML file creation complete.\n");
+            console.log("[✓] HTML file creation complete.\n");
          } else if (buildStep === 2) {
-            console.log("✅ CSS file creation complete.\n");
+            console.log("[✓] CSS file creation complete.\n");
          } else if (buildStep === 3) {
-            console.log("✅ JavaScript file creation complete.\n");
+            console.log("[✓] JavaScript file creation complete.\n");
          } else {
-            console.log(`✅ Build step ${buildStep} complete.\n");
+            console.log(`[✓] Build step ${buildStep} complete.\n`);
          }
 
          const functionResponsePart = {
@@ -455,8 +455,8 @@ Start with the first command when the user makes their request.
          });
 
       } else {
-         console.log(`\n✅ ${result.text ?? ""}\n`);
-         console.log("\n🚀 Your app is ready! Open the generated folder and check index.html now.\n");
+         console.log(`\n[>] ${result.text ?? ""}\n`);
+         console.log("\n[*] Your app is ready! Open the generated folder and check index.html now.\n");
          History.push({
             role: "model",
             parts: [{ text: result.text ?? "" }]
@@ -467,14 +467,14 @@ Start with the first command when the user makes their request.
 }
 
 async function main() {
-   console.log("\n🚀 AI Website Builder Ready!\n");
+   console.log("\n[*] AI Website Builder Ready!\n");
    console.log("Type your website idea and press Enter. Type 'exit' to quit.\n");
 
    while (true) {
       const question = await askQuestion("ask me anything --> ");
 
       if (question.toLowerCase() === "exit") {
-         console.log("\n👋 Goodbye!\n");
+         console.log("\n[-] Goodbye!\n");
          rl.close();
          break;
       }
