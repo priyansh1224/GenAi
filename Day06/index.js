@@ -412,7 +412,7 @@ Start with the first command when the user makes their request.
          } else if (buildStep === 3) {
             console.log("\n🧠 Creating JavaScript file (script.js)...\n");
          } else {
-            console.log(`\n🚧 Running build step ${buildStep}...\n");
+            console.log(`\n🚧 Running build step ${buildStep}...\n`);
          }
 
          console.log(`\n🔧 Executing: ${args.command}\n`);
@@ -467,14 +467,14 @@ Start with the first command when the user makes their request.
 }
 
 async function main() {
-   console.log("\n[*] AI Website Builder Ready!\n");
+   console.log("\n🚀 AI Website Builder Ready!\n");
    console.log("Type your website idea and press Enter. Type 'exit' to quit.\n");
 
    while (true) {
       const question = await askQuestion("ask me anything --> ");
 
       if (question.toLowerCase() === "exit") {
-         console.log("\n[-] Goodbye!\n");
+         console.log("\n👋 Goodbye!\n");
          rl.close();
          break;
       }
