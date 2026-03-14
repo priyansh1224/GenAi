@@ -57,6 +57,15 @@ async function writeFile({file_Path,content}){
    return {success:true};
 }
 
+
+const tools={
+   list_files:listFiles,
+   read_file:readFile,
+   write_file:writeFile
+   
+
+}
+
 // tool declarations
 
 const listFilesTool={
