@@ -1,9 +1,17 @@
 {
+  "name": "code-review-agent",
+  "version": "1.0.0",
+  "description": "A Gemini-powered code review and fixing agent.",
+  "main": "index.js",
   "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "review": "node index.js ."
+  },
   "dependencies": {
     "@google/genai": "^1.42.0",
     "child_process": "^1.0.2",
-    "dotenv": "^17.3.1",
+    "dotenv": "^16.0.3",
     "os": "^0.1.2",
     "readline-sync": "^1.4.10",
     "util": "^0.12.5"
