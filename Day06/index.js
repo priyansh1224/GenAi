@@ -1,11 +1,16 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, FunctionCallingConfigMode } from "@google/genai";
 import { exec } from "child_process";
 import dotenv from 'dotenv';
 import util from 'util';
 import os from 'os';
 import readline from 'readline';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PROJECT_ROOT = path.resolve(__dirname);
 
 const platform = os.platform();
 
@@ -13,10 +18,14 @@ const execute = util.promisify(exec);
 
 const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
-// tool
+// tool: run command in PROJECT_ROOT so project folder and files are created here
 async function executeCommand({ command }) {
    try {
-      const { stdout, stderr } = await execute(command);
+      const opts = { cwd: PROJECT_ROOT };
+      if (platform === 'win32') {
+         opts.shell = 'powershell.exe';
+      }
+      const { stdout, stderr } = await execute(command, opts);
 
       if (stderr) {
          return `Error executing command: ${stderr}`;
@@ -90,6 +99,8 @@ SECTION 2: OPERATING SYSTEM AWARENESS
 ==================================================
 
 Current Operating System: ${platform}
+
+Working directory: All commands run in the project root. Create the project folder (e.g. my-portfolio) in the current directory and write all files inside that folder using relative paths (e.g. my-portfolio/index.html).
 
 You MUST adapt every single command to be fully compatible with this operating system.
 
@@ -392,11 +403,18 @@ Start with the first command when the user makes their request.
 
             tools: [{
                functionDeclarations: [commandExecutor]
-            }]
+            }],
+            toolConfig: {
+               functionCallingConfig: {
+                  mode: FunctionCallingConfigMode.ANY,
+                  allowedFunctionNames: ['executeCommand']
+               }
+            }
          }
       });
 
       const functionCalls = result.functionCalls ?? [];
+      const text = (result.text ?? "").trim();
 
       if (functionCalls.length > 0) {
          const functionCall = functionCalls[0];
@@ -455,11 +473,63 @@ Start with the first command when the user makes their request.
          });
 
       } else {
-         console.log(`\n[>] ${result.text ?? ""}\n`);
-         console.log("\n[*] Your app is ready! Open the generated folder and check index.html now.\n");
+         const isCompletionMessage = /(project is )?complete|ready|done|finished|all set|successfully built|open index\.html/i.test(text) && text.length < 300;
+
+         if (text && !isCompletionMessage) {
+            const syntheticFunctionCall = {
+               name: 'executeCommand',
+               args: { command: text }
+            };
+
+            buildStep += 1;
+
+            if (buildStep === 1) {
+               console.log("\n📝 Creating HTML file (index.html)...\n");
+            } else if (buildStep === 2) {
+               console.log("\n🎨 Creating CSS file (style.css)...\n");
+            } else if (buildStep === 3) {
+               console.log("\n🧠 Creating JavaScript file (script.js)...\n");
+            } else {
+               console.log(`\n🚧 Running build step ${buildStep}...\n`);
+            }
+
+            console.log(`\n🔧 Executing: ${text}\n`);
+
+            const toolResponse = await executeCommand({ command: text });
+
+            console.log(`📋 Result: ${toolResponse}\n`);
+
+            if (buildStep === 1) {
+               console.log("[✓] HTML file creation complete.\n");
+            } else if (buildStep === 2) {
+               console.log("[✓] CSS file creation complete.\n");
+            } else if (buildStep === 3) {
+               console.log("[✓] JavaScript file creation complete.\n");
+            } else {
+               console.log(`[✓] Build step ${buildStep} complete.\n`);
+            }
+
+            History.push({
+               role: 'model',
+               parts: [{ functionCall: syntheticFunctionCall }]
+            });
+            History.push({
+               role: 'user',
+               parts: [{
+                  functionResponse: {
+                     name: 'executeCommand',
+                     response: { result: toolResponse }
+                  }
+               }]
+            });
+            continue;
+         }
+
+         console.log(`\n✅ ${text || "Done."}\n`);
+         console.log("\n🚀 Your app is ready! Open the generated folder and check index.html now.\n");
          History.push({
             role: "model",
-            parts: [{ text: result.text ?? "" }]
+            parts: [{ text: text || "Build complete." }]
          });
          break;
       }
