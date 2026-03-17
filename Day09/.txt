@@ -1,0 +1,4 @@
+Vector DataBase
+Type of Finding the Distance and connection of the Different vectors
+1. Euclidean Distance
+2. cosine Similarity 
