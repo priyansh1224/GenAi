@@ -792,20 +792,25 @@ export async function runAgent(directoryPath) {
 const directory = process.argv[2] || ".";
 
 // Validate the directory
-async function validateAndRun() { // FIXED: Wrapped CLI entry in an async function for await fs.access
+async function validateAndRun() { // FIXED: Wrapped CLI entry in an async 
+// function for await fs.access
     try {
         const exists = await fs.access(directory).then(() => true).catch(() => false);
         if (!exists) {
+
             console.error(`Error: Directory "${directory}" does not exist.`);
             console.log("Usage: node index.js <directory-path>");
             console.log("Example: node index.js ../my-project");
             process.exit(1);
+
         }
 
         const stat = await fs.stat(directory); // FIXED: Used fs.promises.stat
         if (!stat.isDirectory()) {
+
             console.error(`Error: "${directory}" is not a directory.`);
             process.exit(1);
+            
         }
 
         await runAgent(directory);
@@ -816,3 +821,4 @@ async function validateAndRun() { // FIXED: Wrapped CLI entry in an async functi
 }
 
 validateAndRun(); // FIXED: Call the async validation and run function
+
