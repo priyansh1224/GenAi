@@ -8,7 +8,7 @@ import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RunnableSequence } from '@langchain/core/runnables';
 dotenv.config();
 
-
+//configuration
 const embeddings = new GoogleGenerativeAIEmbeddings({
     apiKey: process.env.GEMINI_API_KEY,
     model: 'text-embedding-004',
@@ -19,6 +19,7 @@ const model = new ChatGoogleGenerativeAI({
     temperature: 0.3, 
 });
 
+//configure with pinecone
 const pinecone = new Pinecone();
 const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME);
 
@@ -37,6 +38,8 @@ async function chatting(question){
 
     const context = searchResults.matches.map(match => match.metadata.text).join("\n\n---\n\n");
     //top 10 questions
+
+    
      // Step 4: Create a prompt template
         const promptTemplate = PromptTemplate.fromTemplate(`
 You are a helpful assistant answering questions based on the provided documentation.
